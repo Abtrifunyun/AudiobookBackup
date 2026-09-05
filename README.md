@@ -4,6 +4,14 @@ Personal tool to log into your own Audible account, pull your purchased library,
 AAX/AAXC audiobooks to DRM-free MP3/M4B for offline listening. Single-user, local-only — not a
 redistribution tool.
 
+> **What this is (and isn't):** source code shared for reference, not a packaged app for general
+> use — there are no releases or pre-built binaries, and none are planned. Running it requires
+> your own Python setup and your own Audible login; it can only ever access and decrypt content
+> *that account already owns*, the same way [OpenAudible](https://openaudible.org),
+> [Libation](https://getlibation.com), and [audible-cli](https://github.com/mkb79/audible-cli) do.
+> It doesn't circumvent anything for content you don't already have a license to, and it isn't
+> built to distribute converted files anywhere.
+
 ## Status
 
 Phase 0-2 complete and verified against a real Audible account: project scaffold, real Audible
