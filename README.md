@@ -44,15 +44,24 @@ next download/convert with no restart needed, and validate/create the folder on 
 failing silently later. Default format/bitrate and delete-after-convert are not built - only
 location is, since that's what was asked for.
 
-Phase 5 (verify + player) complete and verified: a book detail page (`/book.html?asin=...`,
-reachable by clicking any title in the library) with a real `<audio>` player streaming the
-converted M4B (Range-request-enabled for seeking - confirmed via a manual `Range:` header test and
-by actually playing audio and watching `currentTime` advance), a clickable chapter list that seeks
-the player, and a "Run Verification" button. Verification re-probes the file with ffprobe and
-reports duration match, chapter count, cover art presence, and metadata tags — persisted per book
-(`verify_details_json`, added via a guarded schema migration that preserved the existing 26-book
-library rather than a blind `CREATE TABLE`). Delete-original isn't built - verify only reports, it
-doesn't act.
+Phase 5 (verify + player), reworked since first built: originally a per-book page tied to the
+Audible-authenticated library (ASIN-keyed, DB-backed). Now a standalone player (`/player.html`)
+that scans the converted-output folder directly and reads each file's own embedded tags via
+ffprobe — no Audible auth, no database, works before login. Opens as a genuinely separate native
+window (pywebview `js_api` bridge, verified against pywebview's own source for the
+already-running-GUI case) via "Open Player" on the login screen or library header. Has a real
+`<audio>` player (Range-request-enabled, confirmed by watching `currentTime` actually advance), a
+clickable chapter list, and on-demand verification (duration/chapters/cover/tags) that isn't
+persisted anywhere, since there's no DB row to persist it to. Delete-original isn't built - verify
+only reports, it doesn't act.
+
+**Login is scoped to only what needs it**: pulling your library (`Refresh Library`) and
+downloading (`Download`) are the only two actions that actually talk to Audible, so those are the
+only things gated behind login - clicking either while logged out sends you to the login screen.
+Everything else - viewing your cached library, converting already-downloaded books, Settings, and
+the standalone Player - works without ever logging in. `library.html` is the real landing page
+(`run_app.py` points the window there directly); the login screen is reachable from it and from
+itself offers Settings/Player/Library so it's never a dead end.
 
 Not yet built: delete-original action, format/bitrate settings, batch operations.
 

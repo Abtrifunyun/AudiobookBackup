@@ -7,8 +7,11 @@ const issuesPanel = document.getElementById("issues-panel");
 const issuesList = document.getElementById("issues-list");
 const issuesCloseBtn = document.getElementById("issues-close-btn");
 const openPlayerBtn = document.getElementById("open-player-btn");
+const loginLink = document.getElementById("login-link");
 
 openPlayerBtn.addEventListener("click", openPlayer);
+
+let authenticated = false;
 
 function showError(message) {
   errorEl.textContent = message;
@@ -58,7 +61,9 @@ function statusBadge(label, status) {
 function renderBooks(books) {
   listEl.innerHTML = "";
   if (books.length === 0) {
-    listEl.innerHTML = '<p class="empty">No books yet — click "Refresh Library" to fetch your purchases.</p>';
+    listEl.innerHTML = authenticated
+      ? '<p class="empty">No books yet — click "Refresh Library" to fetch your purchases.</p>'
+      : '<p class="empty">No cached library yet — log in to fetch your purchases.</p>';
     return;
   }
   for (const book of books) {
@@ -137,10 +142,8 @@ async function refreshFromCache() {
 async function loadCached() {
   try {
     const status = await apiGet("/api/auth/status");
-    if (!status.authenticated) {
-      window.location.href = "/";
-      return;
-    }
+    authenticated = status.authenticated;
+    loginLink.hidden = authenticated;
   } catch (err) {
     console.error(err);
   }
@@ -149,6 +152,10 @@ async function loadCached() {
 
 refreshBtn.addEventListener("click", async () => {
   hideError();
+  if (!authenticated) {
+    window.location.href = "/";
+    return;
+  }
   refreshBtn.disabled = true;
   refreshBtn.textContent = "Syncing…";
   try {
@@ -169,6 +176,10 @@ listEl.addEventListener("click", async (e) => {
   const isConvert = btn.classList.contains("convert-btn");
   const action = isConvert ? "convert" : "download";
   hideError();
+  if (action === "download" && !authenticated) {
+    window.location.href = "/";
+    return;
+  }
   const asin = btn.dataset.asin;
   btn.disabled = true;
   btn.textContent = "Starting…";

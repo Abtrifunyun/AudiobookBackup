@@ -16,6 +16,9 @@ function hideError(el) {
 }
 
 document.getElementById("open-player-btn").addEventListener("click", openPlayer);
+document.getElementById("skip-login-btn").addEventListener("click", () => {
+  window.location.href = "/library.html";
+});
 
 async function init() {
   try {

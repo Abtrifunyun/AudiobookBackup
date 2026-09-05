@@ -53,7 +53,7 @@ def main() -> None:
     _wait_for_server()
     window = webview.create_window(
         "Audiobook Backup",
-        f"http://{HOST}:{PORT}",
+        f"http://{HOST}:{PORT}/library.html",
         width=1100,
         height=800,
         min_size=(480, 400),

@@ -10,7 +10,10 @@
 <div class="page page-narrow">
   <header class="library-header">
     <h1>Audiobook Backup</h1>
-    <button id="open-player-btn" class="link-btn" type="button">Open Player</button>
+    <div class="library-header-actions">
+      <a href="/settings.html" class="link-btn">Settings</a>
+      <button id="open-player-btn" class="link-btn" type="button">Open Player</button>
+    </div>
   </header>
 
   <div id="checking" class="card">
@@ -32,6 +35,12 @@
       <option value="in">India</option>
     </select>
     <button id="start-login-btn">Log in with Audible</button>
+    <button id="skip-login-btn" class="secondary" type="button">Skip for now →</button>
+    <p class="hint">
+      Login is only needed to refresh your library from Audible or download new books. You can
+      browse your cached library, convert already-downloaded books, use the standalone Player, and
+      manage folders in Settings without ever logging in.
+    </p>
     <p id="login-error" class="error" hidden></p>
   </div>
 
