@@ -15,6 +15,7 @@ def _build_response() -> SettingsResponse:
         library_output_dir=str(config.get_library_output_dir()),
         downloads_dir_is_default=db.get_setting("downloads_dir") in (None, ""),
         library_output_dir_is_default=db.get_setting("library_output_dir") in (None, ""),
+        organize_by_author=config.get_organize_by_author(),
     )
 
 
@@ -63,5 +64,8 @@ async def update_settings(body: SettingsUpdateRequest) -> SettingsResponse:
             body.library_output_dir, "Converted output folder"
         )
         db.set_setting("library_output_dir", value)
+
+    if body.organize_by_author is not None:
+        db.set_setting("organize_by_author", "true" if body.organize_by_author else "false")
 
     return _build_response()

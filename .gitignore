@@ -13,3 +13,8 @@ __pycache__/
 /library/
 
 .pytest_cache/
+
+# Runtime error log (app/error_log.py) - personal debugging history for this
+# machine, not source. Named CHANGELOG.md at the user's request, but it's a
+# generated error record, not a hand-maintained release changelog.
+/CHANGELOG.md

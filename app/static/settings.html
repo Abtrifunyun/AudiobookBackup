@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Audiobook Backup — Settings</title>
 <link rel="stylesheet" href="/css/style.css">
+<script>
+(function () {
+  var t = localStorage.getItem("theme");
+  if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t);
+})();
+</script>
 </head>
 <body>
 <div class="page page-narrow">
@@ -12,6 +18,13 @@
     <h1>Settings</h1>
     <a href="/library.html" class="link-btn">← Back to Library</a>
   </header>
+
+  <div class="card">
+    <label class="checkbox-row">
+      <input id="dark-mode-checkbox" type="checkbox">
+      Dark mode
+    </label>
+  </div>
 
   <div class="card">
     <label for="downloads-dir">Downloads folder (raw AAX/AAXC + voucher files)</label>
@@ -23,6 +36,23 @@
     <input id="library-dir" type="text" placeholder="D:\AudiobookBackup\library">
     <p id="library-dir-default" class="hint" hidden>Using the default location.</p>
     <button id="open-library-btn" class="secondary" type="button">Open Converted Folder</button>
+
+    <label class="checkbox-row">
+      <input id="organize-by-author" type="checkbox">
+      Organize converted files into Author/Title subfolders
+    </label>
+    <p class="hint">
+      Off puts every converted file directly in the converted output folder instead. This is a
+      personal, local-only preference — it's not part of the shared default.
+    </p>
+    <p class="hint">
+      This only affects new conversions — files already sitting in their Author/Title folders are
+      left alone, whichever way you flip this. If you move or flatten them yourself afterward,
+      do it carefully: the app records each file's path in its own database, so that record goes
+      stale the moment you move something outside the app, and two different books that happen to
+      share a title would silently overwrite each other in a flat folder (the app checks for that
+      automatically when it converts; a manual move gets no such check).
+    </p>
 
     <button id="save-btn">Save</button>
     <button id="reset-btn" class="secondary" type="button">Reset to Defaults</button>

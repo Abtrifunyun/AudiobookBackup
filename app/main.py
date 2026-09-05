@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app import config, db
 from app.error_log import log_exception
-from app.routes import auth_routes, errors_routes, health, library_routes, player_routes, settings_routes
+from app.routes import auth_routes, health, library_routes, player_routes, settings_routes
 
 config.ensure_dirs()
 logging.basicConfig(
@@ -34,7 +34,6 @@ app = FastAPI(title="Audiobook Backup Tool", lifespan=lifespan)
 app.include_router(health.router)
 app.include_router(auth_routes.router)
 app.include_router(library_routes.router)
-app.include_router(errors_routes.router)
 app.include_router(settings_routes.router)
 app.include_router(player_routes.router)
 

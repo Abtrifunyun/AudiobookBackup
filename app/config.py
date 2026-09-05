@@ -33,6 +33,13 @@ def get_library_output_dir() -> Path:
     return Path(value) if value else DEFAULT_LIBRARY_OUTPUT_DIR
 
 
+def get_organize_by_author() -> bool:
+    from app import db
+
+    value = db.get_setting("organize_by_author")
+    return value != "false"
+
+
 def ensure_dirs() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     COVERS_DIR.mkdir(parents=True, exist_ok=True)

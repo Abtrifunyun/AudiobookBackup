@@ -98,28 +98,18 @@ class LibrarySyncResponse(BaseModel):
     books_fetched: int
 
 
-class ErrorOut(BaseModel):
-    id: int
-    occurred_at: str
-    source: str
-    message: str
-    traceback: Optional[str] = None
-
-
-class ErrorsResponse(BaseModel):
-    errors: list[ErrorOut]
-
-
 class SettingsResponse(BaseModel):
     downloads_dir: str
     library_output_dir: str
     downloads_dir_is_default: bool
     library_output_dir_is_default: bool
+    organize_by_author: bool
 
 
 class SettingsUpdateRequest(BaseModel):
     downloads_dir: Optional[str] = None
     library_output_dir: Optional[str] = None
+    organize_by_author: Optional[bool] = None
 
 
 @dataclass

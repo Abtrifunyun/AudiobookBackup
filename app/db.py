@@ -271,21 +271,6 @@ def save_convert_result(asin: str, convert_format: str, output_file_path: str) -
         )
 
 
-def log_error(source: str, message: str, traceback: Optional[str] = None) -> None:
-    with _connect() as conn:
-        conn.execute(
-            "INSERT INTO app_errors (occurred_at, source, message, traceback) VALUES (?, ?, ?, ?)",
-            (_now(), source, message, traceback),
-        )
-
-
-def get_recent_errors(limit: int = 50) -> list[sqlite3.Row]:
-    with _connect() as conn:
-        return conn.execute(
-            "SELECT * FROM app_errors ORDER BY id DESC LIMIT ?", (limit,)
-        ).fetchall()
-
-
 def get_last_sync() -> Optional[sqlite3.Row]:
     with _connect() as conn:
         return conn.execute(

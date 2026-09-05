@@ -111,9 +111,12 @@ def _run_convert(asin: str) -> None:
         narrators = json.loads(row["narrators_json"] or "[]")
         title = row["title"]
 
-        author_dir = convert_ffmpeg.sanitize_path_component(authors[0] if authors else "Unknown Author")
         title_dir = convert_ffmpeg.sanitize_path_component(title)
-        output_path = config.get_library_output_dir() / author_dir / title_dir / f"{title_dir}.m4b"
+        if config.get_organize_by_author():
+            author_dir = convert_ffmpeg.sanitize_path_component(authors[0] if authors else "Unknown Author")
+            output_path = config.get_library_output_dir() / author_dir / title_dir / f"{title_dir}.m4b"
+        else:
+            output_path = config.get_library_output_dir() / f"{title_dir}.m4b"
 
         result = convert_ffmpeg.convert_to_m4b(
             row["raw_file_path"], row["voucher_file_path"], output_path, title, authors, narrators

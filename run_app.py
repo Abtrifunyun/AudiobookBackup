@@ -1,6 +1,7 @@
 import os
 import threading
 import time
+from pathlib import Path
 
 import httpx
 import uvicorn
@@ -10,6 +11,7 @@ from app.main import app as fastapi_app
 
 HOST = "127.0.0.1"
 PORT = 8000
+ICON_PATH = Path(__file__).resolve().parent / "assets" / "book.ico"
 
 
 def _run_server() -> None:
@@ -60,7 +62,10 @@ def main() -> None:
         js_api=Api(),
     )
     window.events.closed += _force_quit
-    webview.start()
+    # icon= only takes effect on GTK/QT (Linux) per pywebview's own docs - Windows
+    # (edgechromium) has no supported way to override the window/taskbar icon, so
+    # this stays cosmetically inert here but is correct if this ever runs on Linux.
+    webview.start(icon=str(ICON_PATH))
     _force_quit()  # fallback in case start() returns without the event firing
 
 

@@ -6,7 +6,26 @@ const saveBtn = document.getElementById("save-btn");
 const resetBtn = document.getElementById("reset-btn");
 const openDownloadsBtn = document.getElementById("open-downloads-btn");
 const openLibraryBtn = document.getElementById("open-library-btn");
+const organizeByAuthorCheckbox = document.getElementById("organize-by-author");
+const darkModeCheckbox = document.getElementById("dark-mode-checkbox");
 const statusEl = document.getElementById("settings-status");
+
+function isDarkMode() {
+  const explicit = document.documentElement.getAttribute("data-theme");
+  if (explicit === "dark" || explicit === "light") return explicit === "dark";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+darkModeCheckbox.checked = isDarkMode();
+darkModeCheckbox.addEventListener("change", () => {
+  const theme = darkModeCheckbox.checked ? "dark" : "light";
+  document.documentElement.setAttribute("data-theme", theme);
+  try {
+    localStorage.setItem("theme", theme);
+  } catch (err) {
+    console.error(err);
+  }
+});
 
 function showStatus(message, isError) {
   statusEl.textContent = message;
@@ -19,6 +38,7 @@ function applySettings(data) {
   libraryDirInput.value = data.library_output_dir;
   downloadsDirDefaultNote.hidden = !data.downloads_dir_is_default;
   libraryDirDefaultNote.hidden = !data.library_output_dir_is_default;
+  organizeByAuthorCheckbox.checked = data.organize_by_author;
 }
 
 async function loadSettings() {
@@ -37,6 +57,7 @@ saveBtn.addEventListener("click", async () => {
     const data = await apiPost("/api/settings", {
       downloads_dir: downloadsDirInput.value,
       library_output_dir: libraryDirInput.value,
+      organize_by_author: organizeByAuthorCheckbox.checked,
     });
     applySettings(data);
     showStatus("Saved. New downloads/conversions will use these folders.", false);
@@ -54,6 +75,7 @@ resetBtn.addEventListener("click", async () => {
     const data = await apiPost("/api/settings", {
       downloads_dir: "",
       library_output_dir: "",
+      organize_by_author: true,
     });
     applySettings(data);
     showStatus("Reset to defaults.", false);

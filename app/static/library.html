@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Audiobook Backup — Library</title>
 <link rel="stylesheet" href="/css/style.css">
+<script>
+(function () {
+  var t = localStorage.getItem("theme");
+  if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t);
+})();
+</script>
 </head>
 <body>
 <div class="page">
@@ -13,20 +19,12 @@
     <div class="library-header-actions">
       <span id="last-synced">Loading…</span>
       <a href="/settings.html" class="link-btn">Settings</a>
-      <button id="issues-btn" class="secondary" type="button">Issues</button>
       <button id="open-player-btn" class="link-btn" type="button">Open Player</button>
       <a href="/" id="login-link" class="link-btn" hidden>Log In</a>
       <button id="refresh-btn">Refresh Library</button>
     </div>
   </header>
   <p id="library-error" class="error" hidden></p>
-  <div id="issues-panel" class="card" hidden>
-    <div class="issues-header">
-      <strong>Recent issues</strong>
-      <button id="issues-close-btn" class="secondary" type="button">Close</button>
-    </div>
-    <div id="issues-list"></div>
-  </div>
   <div id="list" class="list"></div>
 </div>
 <script defer src="/js/api.js"></script>

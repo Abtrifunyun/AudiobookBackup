@@ -2,10 +2,6 @@ const listEl = document.getElementById("list");
 const lastSyncedEl = document.getElementById("last-synced");
 const errorEl = document.getElementById("library-error");
 const refreshBtn = document.getElementById("refresh-btn");
-const issuesBtn = document.getElementById("issues-btn");
-const issuesPanel = document.getElementById("issues-panel");
-const issuesList = document.getElementById("issues-list");
-const issuesCloseBtn = document.getElementById("issues-close-btn");
 const openPlayerBtn = document.getElementById("open-player-btn");
 const loginLink = document.getElementById("login-link");
 
@@ -193,43 +189,4 @@ listEl.addEventListener("click", async (e) => {
   }
 });
 
-function renderIssues(errors) {
-  if (errors.length === 0) {
-    issuesList.innerHTML = '<p class="empty">No issues logged.</p>';
-    return;
-  }
-  issuesList.innerHTML = errors
-    .map(
-      (e) => `
-        <details class="issue">
-          <summary>${new Date(e.occurred_at).toLocaleString()} — ${e.source}: ${e.message}</summary>
-          <pre class="issue-traceback">${e.traceback ? e.traceback.replace(/</g, "&lt;") : "(no traceback)"}</pre>
-        </details>
-      `
-    )
-    .join("");
-}
-
-async function loadIssues() {
-  try {
-    const data = await apiGet("/api/errors");
-    issuesBtn.textContent = data.errors.length ? `Issues (${data.errors.length})` : "Issues";
-    renderIssues(data.errors);
-  } catch (err) {
-    issuesList.innerHTML = `<p class="error">Failed to load issues: ${err.message}</p>`;
-  }
-}
-
-issuesBtn.addEventListener("click", async () => {
-  issuesPanel.hidden = !issuesPanel.hidden;
-  if (!issuesPanel.hidden) {
-    await loadIssues();
-  }
-});
-
-issuesCloseBtn.addEventListener("click", () => {
-  issuesPanel.hidden = true;
-});
-
 loadCached();
-loadIssues();
