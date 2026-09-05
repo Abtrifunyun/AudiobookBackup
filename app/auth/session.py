@@ -1,4 +1,3 @@
-import logging
 import queue
 import threading
 import uuid
@@ -7,8 +6,7 @@ from typing import Optional
 import audible
 
 from app.auth.service import login_external
-
-logger = logging.getLogger(__name__)
+from app.error_log import log_exception
 
 POSTLOGIN_TIMEOUT_SECONDS = 600
 
@@ -40,7 +38,7 @@ def start(locale: str) -> LoginHandshake:
             handshake.result = login_external(handshake.locale, callback)
         except BaseException as exc:
             handshake.error = exc
-            logger.exception("Login handshake %s failed", handshake.id)
+            log_exception(f"auth.login:{handshake.id}", exc)
         finally:
             handshake.done_event.set()
 

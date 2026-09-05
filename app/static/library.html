@@ -12,11 +12,20 @@
     <h1>Your Library</h1>
     <div class="library-header-actions">
       <span id="last-synced">Loading…</span>
+      <a href="/settings.html" class="link-btn">Settings</a>
+      <button id="issues-btn" class="secondary" type="button">Issues</button>
       <button id="refresh-btn">Refresh Library</button>
     </div>
   </header>
   <p id="library-error" class="error" hidden></p>
-  <div id="grid" class="grid"></div>
+  <div id="issues-panel" class="card" hidden>
+    <div class="issues-header">
+      <strong>Recent issues</strong>
+      <button id="issues-close-btn" class="secondary" type="button">Close</button>
+    </div>
+    <div id="issues-list"></div>
+  </div>
+  <div id="list" class="list"></div>
 </div>
 <script defer src="/js/api.js"></script>
 <script defer src="/js/library.js"></script>

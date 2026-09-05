@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audiobook Backup — Book</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="page">
+  <header class="library-header">
+    <a href="/library.html" class="link-btn">← Back to Library</a>
+  </header>
+  <p id="book-error" class="error" hidden></p>
+
+  <div class="book-detail-header">
+    <img id="book-cover" class="book-detail-cover" src="" alt="">
+    <div class="book-detail-info">
+      <h1 id="book-title"></h1>
+      <p id="book-subtitle" class="hint" hidden></p>
+      <p id="book-authors"></p>
+      <p id="book-narrators" class="hint"></p>
+      <p id="book-runtime" class="hint"></p>
+    </div>
+  </div>
+
+  <div id="player-section" class="card" hidden>
+    <audio id="audio-player" controls style="width: 100%"></audio>
+  </div>
+  <p id="no-audio-note" class="hint" hidden>Convert this book first to enable playback.</p>
+
+  <div class="book-detail-columns">
+    <div class="card">
+      <h2>Chapters</h2>
+      <div id="chapters-list"></div>
+    </div>
+
+    <div class="card">
+      <h2>Verification</h2>
+      <button id="verify-btn">Run Verification</button>
+      <div id="verify-results"></div>
+    </div>
+  </div>
+</div>
+<script defer src="/js/api.js"></script>
+<script defer src="/js/book.js"></script>
+</body>
+</html>

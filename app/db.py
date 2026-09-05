@@ -7,7 +7,7 @@ from typing import Iterator, Optional
 from app.config import DB_PATH
 from app.models import BookIn
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 SCHEMA_SQL = """
 PRAGMA foreign_keys = ON;
@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS books (
 
     verified               INTEGER NOT NULL DEFAULT 0 CHECK (verified IN (0,1)),
     verified_at             TEXT,
+    verify_details_json      TEXT,
     original_deleted          INTEGER NOT NULL DEFAULT 0 CHECK (original_deleted IN (0,1)),
 
     created_at              TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
@@ -76,6 +77,16 @@ CREATE TABLE IF NOT EXISTS app_settings (
     key    TEXT PRIMARY KEY,
     value  TEXT
 );
+
+CREATE TABLE IF NOT EXISTS app_errors (
+    id          INTEGER PRIMARY KEY,
+    occurred_at TEXT NOT NULL,
+    source      TEXT NOT NULL,
+    message     TEXT NOT NULL,
+    traceback   TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_app_errors_occurred_at ON app_errors(occurred_at);
 """
 
 
@@ -94,7 +105,14 @@ def _connect() -> Iterator[sqlite3.Connection]:
 
 def init_db() -> None:
     with _connect() as conn:
+        # Read the version BEFORE executescript's CREATE TABLE IF NOT EXISTS runs:
+        # a brand-new DB creates the table with every current column already in
+        # it (nothing to migrate), while an existing pre-v2 DB is untouched by
+        # IF NOT EXISTS and needs the column added by hand.
+        previous_version = conn.execute("PRAGMA user_version").fetchone()[0]
         conn.executescript(SCHEMA_SQL)
+        if 0 < previous_version < 2:
+            conn.execute("ALTER TABLE books ADD COLUMN verify_details_json TEXT")
         conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
 
 
@@ -178,6 +196,109 @@ def record_sync_finish(
             "UPDATE library_syncs SET finished_at = ?, status = ?, books_fetched = ?, error_message = ? WHERE id = ?",
             (_now(), status, books_fetched, error_message, sync_id),
         )
+
+
+def mark_download_status(asin: str, status: str, error: Optional[str] = None) -> None:
+    with _connect() as conn:
+        conn.execute(
+            "UPDATE books SET download_status = ?, download_error = ?, updated_at = ? WHERE asin = ?",
+            (status, error, _now(), asin),
+        )
+
+
+def save_download_result(
+    asin: str,
+    download_format: str,
+    raw_file_path: str,
+    voucher_file_path: Optional[str],
+    file_size_bytes: int,
+) -> None:
+    with _connect() as conn:
+        conn.execute(
+            """
+            UPDATE books SET
+                download_status = 'downloaded',
+                download_format = ?,
+                raw_file_path = ?,
+                voucher_file_path = ?,
+                file_size_bytes = ?,
+                downloaded_at = ?,
+                download_error = NULL,
+                updated_at = ?
+            WHERE asin = ?
+            """,
+            (download_format, raw_file_path, voucher_file_path, file_size_bytes, _now(), _now(), asin),
+        )
+
+
+def get_setting(key: str) -> Optional[str]:
+    with _connect() as conn:
+        row = conn.execute("SELECT value FROM app_settings WHERE key = ?", (key,)).fetchone()
+        return row["value"] if row else None
+
+
+def set_setting(key: str, value: str) -> None:
+    with _connect() as conn:
+        conn.execute(
+            "INSERT INTO app_settings (key, value) VALUES (?, ?) "
+            "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+            (key, value),
+        )
+
+
+def mark_convert_status(asin: str, status: str, error: Optional[str] = None) -> None:
+    with _connect() as conn:
+        conn.execute(
+            "UPDATE books SET convert_status = ?, convert_error = ?, updated_at = ? WHERE asin = ?",
+            (status, error, _now(), asin),
+        )
+
+
+def save_convert_result(asin: str, convert_format: str, output_file_path: str) -> None:
+    with _connect() as conn:
+        conn.execute(
+            """
+            UPDATE books SET
+                convert_status = 'converted',
+                convert_format = ?,
+                output_file_path = ?,
+                converted_at = ?,
+                convert_error = NULL,
+                updated_at = ?
+            WHERE asin = ?
+            """,
+            (convert_format, output_file_path, _now(), _now(), asin),
+        )
+
+
+def save_verify_result(asin: str, verified: bool, details_json: str) -> None:
+    with _connect() as conn:
+        conn.execute(
+            """
+            UPDATE books SET
+                verified = ?,
+                verified_at = ?,
+                verify_details_json = ?,
+                updated_at = ?
+            WHERE asin = ?
+            """,
+            (1 if verified else 0, _now(), details_json, _now(), asin),
+        )
+
+
+def log_error(source: str, message: str, traceback: Optional[str] = None) -> None:
+    with _connect() as conn:
+        conn.execute(
+            "INSERT INTO app_errors (occurred_at, source, message, traceback) VALUES (?, ?, ?, ?)",
+            (_now(), source, message, traceback),
+        )
+
+
+def get_recent_errors(limit: int = 50) -> list[sqlite3.Row]:
+    with _connect() as conn:
+        return conn.execute(
+            "SELECT * FROM app_errors ORDER BY id DESC LIMIT ?", (limit,)
+        ).fetchall()
 
 
 def get_last_sync() -> Optional[sqlite3.Row]:

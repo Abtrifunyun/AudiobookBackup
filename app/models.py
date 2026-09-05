@@ -43,8 +43,28 @@ class BookOut(BaseModel):
     purchase_date: Optional[str] = None
     cover_url: Optional[str] = None
     cover_local_path: Optional[str] = None
+    file_size_bytes: Optional[int] = None
     download_status: str
+    download_error: Optional[str] = None
     convert_status: str
+    convert_error: Optional[str] = None
+    output_file_path: Optional[str] = None
+    verified: bool = False
+    verified_at: Optional[str] = None
+    verify_duration_seconds: Optional[float] = None
+    verify_chapter_count: Optional[int] = None
+    verify_has_cover_art: Optional[bool] = None
+    verify_issues: list[str] = []
+
+
+class ChapterOut(BaseModel):
+    title: str
+    start_seconds: float
+    end_seconds: float
+
+
+class ChaptersResponse(BaseModel):
+    chapters: list[ChapterOut]
 
 
 class LibraryResponse(BaseModel):
@@ -56,6 +76,30 @@ class LibrarySyncResponse(BaseModel):
     books: list[BookOut]
     last_synced_at: str
     books_fetched: int
+
+
+class ErrorOut(BaseModel):
+    id: int
+    occurred_at: str
+    source: str
+    message: str
+    traceback: Optional[str] = None
+
+
+class ErrorsResponse(BaseModel):
+    errors: list[ErrorOut]
+
+
+class SettingsResponse(BaseModel):
+    downloads_dir: str
+    library_output_dir: str
+    downloads_dir_is_default: bool
+    library_output_dir_is_default: bool
+
+
+class SettingsUpdateRequest(BaseModel):
+    downloads_dir: Optional[str] = None
+    library_output_dir: Optional[str] = None
 
 
 @dataclass

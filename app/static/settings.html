@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audiobook Backup — Settings</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="page page-narrow">
+  <header class="library-header">
+    <h1>Settings</h1>
+    <a href="/library.html" class="link-btn">← Back to Library</a>
+  </header>
+
+  <div class="card">
+    <label for="downloads-dir">Downloads folder (raw AAX/AAXC + voucher files)</label>
+    <input id="downloads-dir" type="text" placeholder="D:\AudiobookBackup\downloads">
+    <p id="downloads-dir-default" class="hint" hidden>Using the default location.</p>
+
+    <label for="library-dir">Converted output folder (finished M4B files)</label>
+    <input id="library-dir" type="text" placeholder="D:\AudiobookBackup\library">
+    <p id="library-dir-default" class="hint" hidden>Using the default location.</p>
+
+    <button id="save-btn">Save</button>
+    <button id="reset-btn" class="secondary" type="button">Reset to Defaults</button>
+    <p id="settings-status" class="hint" hidden></p>
+  </div>
+</div>
+<script defer src="/js/api.js"></script>
+<script defer src="/js/settings.js"></script>
+</body>
+</html>

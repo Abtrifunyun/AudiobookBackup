@@ -11,11 +11,26 @@ LOGS_DIR = DATA_DIR / "logs"
 
 STATIC_DIR = BASE_DIR / "app" / "static"
 
-# Reserved for Phase 3+ (download) and Phase 4+ (convert) - not created or used yet.
-DOWNLOADS_DIR = Path(os.environ.get("AUDIOBOOKBACKUP_DOWNLOADS_DIR", BASE_DIR / "downloads"))
-LIBRARY_OUTPUT_DIR = Path(os.environ.get("AUDIOBOOKBACKUP_LIBRARY_DIR", BASE_DIR / "library"))
+# Fallback paths, used until a user-chosen location is saved via the Settings
+# screen (persisted in the `app_settings` table, not fixed at import time).
+DEFAULT_DOWNLOADS_DIR = Path(os.environ.get("AUDIOBOOKBACKUP_DOWNLOADS_DIR", BASE_DIR / "downloads"))
+DEFAULT_LIBRARY_OUTPUT_DIR = Path(os.environ.get("AUDIOBOOKBACKUP_LIBRARY_DIR", BASE_DIR / "library"))
 
 DEFAULT_LOCALE = "us"
+
+
+def get_downloads_dir() -> Path:
+    from app import db
+
+    value = db.get_setting("downloads_dir")
+    return Path(value) if value else DEFAULT_DOWNLOADS_DIR
+
+
+def get_library_output_dir() -> Path:
+    from app import db
+
+    value = db.get_setting("library_output_dir")
+    return Path(value) if value else DEFAULT_LIBRARY_OUTPUT_DIR
 
 
 def ensure_dirs() -> None:
