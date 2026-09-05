@@ -136,13 +136,10 @@ button.secondary {
   margin: 0;
 }
 
-.book-row-info h3 a {
-  color: var(--text);
-  text-decoration: none;
-}
-
-.book-row-info h3 a:hover {
-  text-decoration: underline;
+.open-btn {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  font-size: 0.85rem;
 }
 
 .book-detail-header {

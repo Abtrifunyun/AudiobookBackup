@@ -78,7 +78,7 @@ function renderBooks(books) {
     row.innerHTML = `
       <img class="book-row-cover" src="${coverSrc || ""}" alt="${book.title} cover" loading="lazy">
       <div class="book-row-info">
-        <h3><a href="/book.html?asin=${book.asin}">${book.title}</a></h3>
+        <h3>${book.title}</h3>
         ${metaParts ? `<p class="book-row-meta">${metaParts}</p>` : ""}
         ${errorMessage ? `<p class="error download-error">${errorMessage}</p>` : ""}
       </div>
@@ -86,6 +86,7 @@ function renderBooks(books) {
         ${statusBadge("Download", book.download_status)}
         ${statusBadge("Convert", book.convert_status)}
       </div>
+      <a href="/book.html?asin=${book.asin}" class="link-btn open-btn">Play ▸</a>
       <button class="download-btn" data-asin="${book.asin}" ${downloadBusy ? "disabled" : ""}>${downloadButtonLabel(book.download_status)}</button>
       <button class="download-btn convert-btn" data-asin="${book.asin}" ${convertBusy ? "disabled" : ""}>${convertButtonLabel(book.convert_status)}</button>
     `;
