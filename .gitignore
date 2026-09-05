@@ -1,0 +1,15 @@
+# Python virtual environment - regenerated via `py -3.14 -m venv .venv`, not source.
+/.venv/
+__pycache__/
+*.pyc
+
+# Runtime state - credentials, database, cached covers, logs. data/auth.json
+# is equivalent to a password; never track or sync it anywhere.
+/data/
+
+# Later-phase transient artifacts (raw AAX/AAXC downloads, converted output) -
+# not source, not meant to be versioned. Folders don't exist yet in Phase 0.
+/downloads/
+/library/
+
+.pytest_cache/

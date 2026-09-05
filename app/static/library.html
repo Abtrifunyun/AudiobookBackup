@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audiobook Backup — Library</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="page">
+  <header class="library-header">
+    <h1>Your Library</h1>
+    <div class="library-header-actions">
+      <span id="last-synced">Loading…</span>
+      <button id="refresh-btn">Refresh Library</button>
+    </div>
+  </header>
+  <p id="library-error" class="error" hidden></p>
+  <div id="grid" class="grid"></div>
+</div>
+<script defer src="/js/api.js"></script>
+<script defer src="/js/library.js"></script>
+</body>
+</html>

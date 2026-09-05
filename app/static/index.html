@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audiobook Backup — Log In</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="page page-narrow">
+  <h1>Audiobook Backup</h1>
+
+  <div id="checking" class="card">
+    <p>Checking login status…</p>
+  </div>
+
+  <div id="login-form" class="card" hidden>
+    <label for="locale">Audible marketplace</label>
+    <select id="locale">
+      <option value="us" selected>United States (.com)</option>
+      <option value="ca">Canada</option>
+      <option value="uk">United Kingdom</option>
+      <option value="au">Australia</option>
+      <option value="fr">France</option>
+      <option value="de">Germany</option>
+      <option value="es">Spain</option>
+      <option value="it">Italy</option>
+      <option value="jp">Japan</option>
+      <option value="in">India</option>
+    </select>
+    <button id="start-login-btn">Log in with Audible</button>
+    <p id="login-error" class="error" hidden></p>
+  </div>
+
+  <div id="paste-section" class="card" hidden>
+    <a id="audible-login-link" class="button-link" href="#" target="_blank" rel="noopener">Open Audible Login ↗</a>
+    <ol class="steps">
+      <li>On the <strong>first</strong> screen, enter your email and <strong>any wrong password</strong>, then submit. This is expected to fail — it's a quirky but necessary step.</li>
+      <li>It'll ask again. This time enter your <strong>real password</strong> and solve the captcha if shown.</li>
+      <li>You'll land on a page that fails to load — that's correct. Copy its <strong>full</strong> URL from the address bar (click the address bar, Ctrl+A, Ctrl+C) and paste it below.</li>
+    </ol>
+    <input id="postlogin-url" type="text" placeholder="https://www.amazon.com/ap/maplanding?...">
+    <button id="complete-login-btn">Complete Login</button>
+    <button id="start-over-btn" class="secondary" type="button">Start Over</button>
+    <p id="complete-error" class="error" hidden></p>
+  </div>
+</div>
+<script defer src="/js/api.js"></script>
+<script defer src="/js/login.js"></script>
+</body>
+</html>
