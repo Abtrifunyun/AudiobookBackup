@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audiobook Backup — Player</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="page">
+  <header class="library-header">
+    <h1>Player</h1>
+    <button id="close-player-btn" class="link-btn" type="button">Close</button>
+  </header>
+  <p class="hint">
+    Plays whatever converted M4B files are already sitting in the converted output folder —
+    no Audible login needed.
+  </p>
+  <p id="player-error" class="error" hidden></p>
+
+  <div class="card">
+    <div class="issues-header">
+      <strong>Converted files</strong>
+      <button id="refresh-files-btn" class="secondary" type="button">Refresh</button>
+    </div>
+    <div id="file-list"></div>
+  </div>
+
+  <div id="player-area" hidden>
+    <div class="book-detail-header">
+      <img id="book-cover" class="book-detail-cover" src="" alt="">
+      <div class="book-detail-info">
+        <h1 id="book-title"></h1>
+        <p id="book-authors"></p>
+        <p id="book-narrators" class="hint"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <audio id="audio-player" controls style="width: 100%"></audio>
+    </div>
+
+    <div class="book-detail-columns">
+      <div class="card">
+        <h2>Chapters</h2>
+        <div id="chapters-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>Verification</h2>
+        <button id="verify-btn">Run Verification</button>
+        <div id="verify-results"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script defer src="/js/api.js"></script>
+<script defer src="/js/player.js"></script>
+</body>
+</html>

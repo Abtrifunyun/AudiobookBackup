@@ -32,6 +32,8 @@ def probe_chapters(path: Path) -> list[dict]:
         ["ffprobe", "-v", "error", "-show_chapters", "-of", "json", str(path)],
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     if result.returncode != 0:
         return []
@@ -49,6 +51,38 @@ def probe_chapters(path: Path) -> list[dict]:
     ]
 
 
+def find_m4b_files(root: Path) -> list[Path]:
+    if not root.exists():
+        return []
+    return sorted(root.rglob("*.m4b"))
+
+
+def probe_summary(path: Path) -> dict:
+    result = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_format", "-show_chapters", "-of", "json", str(path)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if result.returncode != 0:
+        return {}
+    try:
+        data = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {}
+    fmt = data.get("format", {})
+    tags = {k.lower(): v for k, v in (fmt.get("tags") or {}).items()}
+    duration_str = fmt.get("duration")
+    return {
+        "title": tags.get("title"),
+        "artist": tags.get("artist"),
+        "composer": tags.get("composer"),
+        "duration_seconds": float(duration_str) if duration_str else None,
+        "chapter_count": len(data.get("chapters", [])),
+    }
+
+
 def _probe_duration(path: Path) -> Optional[float]:
     result = subprocess.run(
         [
@@ -59,6 +93,8 @@ def _probe_duration(path: Path) -> Optional[float]:
         ],
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     try:
         return float(result.stdout.strip())
@@ -93,7 +129,7 @@ def convert_to_m4b(
         "-f", "mp4",
         str(output_path),
     ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if result.returncode != 0:
         raise ConvertError(result.stderr[-4000:] or "ffmpeg failed with no stderr output")
 

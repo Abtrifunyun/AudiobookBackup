@@ -15,6 +15,8 @@ function hideError(el) {
   el.hidden = true;
 }
 
+document.getElementById("open-player-btn").addEventListener("click", openPlayer);
+
 async function init() {
   try {
     const status = await apiGet("/api/auth/status");

@@ -37,6 +37,17 @@ def _force_quit() -> None:
     os._exit(0)
 
 
+class Api:
+    def open_player_window(self) -> None:
+        webview.create_window(
+            "Audiobook Backup — Player",
+            f"http://{HOST}:{PORT}/player.html",
+            width=950,
+            height=800,
+            min_size=(480, 400),
+        )
+
+
 def main() -> None:
     threading.Thread(target=_run_server, daemon=True).start()
     _wait_for_server()
@@ -46,6 +57,7 @@ def main() -> None:
         width=1100,
         height=800,
         min_size=(480, 400),
+        js_api=Api(),
     )
     window.events.closed += _force_quit
     webview.start()

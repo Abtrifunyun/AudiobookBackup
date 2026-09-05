@@ -121,9 +121,12 @@ button.secondary {
   padding: 8px 14px;
   border-radius: 6px;
   border: 1px solid var(--border);
+  background: transparent;
   color: var(--text);
   text-decoration: none;
   font-size: 0.9rem;
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .link-btn:hover {
@@ -134,12 +137,6 @@ button.secondary {
   font-size: 0.8rem;
   color: var(--text-muted);
   margin: 0;
-}
-
-.open-btn {
-  flex-shrink: 0;
-  padding: 6px 10px;
-  font-size: 0.85rem;
 }
 
 .book-detail-header {

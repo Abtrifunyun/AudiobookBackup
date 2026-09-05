@@ -49,12 +49,6 @@ class BookOut(BaseModel):
     convert_status: str
     convert_error: Optional[str] = None
     output_file_path: Optional[str] = None
-    verified: bool = False
-    verified_at: Optional[str] = None
-    verify_duration_seconds: Optional[float] = None
-    verify_chapter_count: Optional[int] = None
-    verify_has_cover_art: Optional[bool] = None
-    verify_issues: list[str] = []
 
 
 class ChapterOut(BaseModel):
@@ -65,6 +59,32 @@ class ChapterOut(BaseModel):
 
 class ChaptersResponse(BaseModel):
     chapters: list[ChapterOut]
+
+
+class PlayerBookOut(BaseModel):
+    path: str
+    file_name: str
+    title: str
+    artist: Optional[str] = None
+    composer: Optional[str] = None
+    duration_seconds: Optional[float] = None
+    chapter_count: int = 0
+
+
+class PlayerBooksResponse(BaseModel):
+    books: list[PlayerBookOut]
+
+
+class PlayerVerifyResponse(BaseModel):
+    valid: bool
+    duration_seconds: Optional[float] = None
+    chapter_count: int = 0
+    has_audio_stream: bool = False
+    has_cover_art: bool = False
+    title_tag: Optional[str] = None
+    artist_tag: Optional[str] = None
+    composer_tag: Optional[str] = None
+    issues: list[str] = []
 
 
 class LibraryResponse(BaseModel):

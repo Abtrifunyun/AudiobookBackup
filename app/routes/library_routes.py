@@ -3,19 +3,16 @@ import json
 import logging
 import sqlite3
 import threading
-from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
-from fastapi.responses import FileResponse
 
 from app import config, db
 from app.audible_client import books as audible_books
 from app.audible_client import download as audible_download
 from app.auth import service as auth_service
 from app.convert import ffmpeg as convert_ffmpeg
-from app.convert import verify as convert_verify
 from app.error_log import log_exception
-from app.models import BookOut, ChapterOut, ChaptersResponse, LibraryResponse, LibrarySyncResponse
+from app.models import BookOut, LibraryResponse, LibrarySyncResponse
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +23,6 @@ IN_PROGRESS_CONVERT_STATUSES = ("queued", "converting")
 
 
 def _book_out_from_row(row: sqlite3.Row) -> BookOut:
-    verify_details = json.loads(row["verify_details_json"]) if row["verify_details_json"] else {}
     return BookOut(
         asin=row["asin"],
         title=row["title"],
@@ -49,12 +45,6 @@ def _book_out_from_row(row: sqlite3.Row) -> BookOut:
         convert_status=row["convert_status"],
         convert_error=row["convert_error"],
         output_file_path=row["output_file_path"],
-        verified=bool(row["verified"]),
-        verified_at=row["verified_at"],
-        verify_duration_seconds=verify_details.get("duration_seconds"),
-        verify_chapter_count=verify_details.get("chapter_count"),
-        verify_has_cover_art=verify_details.get("has_cover_art"),
-        verify_issues=verify_details.get("issues", []),
     )
 
 
@@ -155,62 +145,6 @@ async def start_convert(asin: str) -> dict:
     db.mark_convert_status(asin, "queued")
     threading.Thread(target=_run_convert, args=(asin,), daemon=True).start()
     return {"success": True}
-
-
-def _require_output_file(asin: str) -> Path:
-    row = db.get_book_by_asin(asin)
-    if row is None:
-        raise HTTPException(status_code=404, detail="Book not found")
-    if not row["output_file_path"]:
-        raise HTTPException(status_code=400, detail="Book has not been converted yet")
-    path = Path(row["output_file_path"])
-    if not path.exists():
-        raise HTTPException(status_code=404, detail="Converted file is missing on disk")
-    return path
-
-
-@router.get("/{asin}/audio")
-async def get_audio(asin: str) -> FileResponse:
-    path = _require_output_file(asin)
-    return FileResponse(path, media_type="audio/mp4", filename=path.name)
-
-
-@router.get("/{asin}/chapters", response_model=ChaptersResponse)
-async def get_chapters(asin: str) -> ChaptersResponse:
-    path = _require_output_file(asin)
-    chapters = convert_ffmpeg.probe_chapters(path)
-    return ChaptersResponse(chapters=[ChapterOut(**ch) for ch in chapters])
-
-
-@router.post("/{asin}/verify", response_model=BookOut)
-async def verify_book(asin: str) -> BookOut:
-    row = db.get_book_by_asin(asin)
-    if row is None:
-        raise HTTPException(status_code=404, detail="Book not found")
-    if row["convert_status"] != "converted" or not row["output_file_path"]:
-        raise HTTPException(status_code=400, detail="Book must be converted before verifying")
-
-    expected_seconds = (row["runtime_length_min"] or 0) * 60 or None
-    try:
-        result = convert_verify.verify_m4b(Path(row["output_file_path"]), expected_seconds)
-    except Exception as exc:
-        log_exception(f"verify:{asin}", exc)
-        raise HTTPException(status_code=500, detail=f"Verification failed to run: {exc}")
-
-    details = {
-        "duration_seconds": result.duration_seconds,
-        "expected_duration_seconds": result.expected_duration_seconds,
-        "chapter_count": result.chapter_count,
-        "has_audio_stream": result.has_audio_stream,
-        "has_cover_art": result.has_cover_art,
-        "title_tag": result.title_tag,
-        "artist_tag": result.artist_tag,
-        "composer_tag": result.composer_tag,
-        "issues": result.issues,
-    }
-    db.save_verify_result(asin, result.valid, json.dumps(details))
-
-    return _book_out_from_row(db.get_book_by_asin(asin))
 
 
 @router.post("/sync", response_model=LibrarySyncResponse)

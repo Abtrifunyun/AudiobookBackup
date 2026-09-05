@@ -32,6 +32,8 @@ def verify_m4b(path: Path, expected_duration_seconds: Optional[float] = None) ->
         ],
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     if probe.returncode != 0:
         return VerifyResult(

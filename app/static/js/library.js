@@ -6,6 +6,9 @@ const issuesBtn = document.getElementById("issues-btn");
 const issuesPanel = document.getElementById("issues-panel");
 const issuesList = document.getElementById("issues-list");
 const issuesCloseBtn = document.getElementById("issues-close-btn");
+const openPlayerBtn = document.getElementById("open-player-btn");
+
+openPlayerBtn.addEventListener("click", openPlayer);
 
 function showError(message) {
   errorEl.textContent = message;
@@ -86,7 +89,6 @@ function renderBooks(books) {
         ${statusBadge("Download", book.download_status)}
         ${statusBadge("Convert", book.convert_status)}
       </div>
-      <a href="/book.html?asin=${book.asin}" class="link-btn open-btn">Play ▸</a>
       <button class="download-btn" data-asin="${book.asin}" ${downloadBusy ? "disabled" : ""}>${downloadButtonLabel(book.download_status)}</button>
       <button class="download-btn convert-btn" data-asin="${book.asin}" ${convertBusy ? "disabled" : ""}>${convertButtonLabel(book.convert_status)}</button>
     `;

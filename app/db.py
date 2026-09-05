@@ -271,21 +271,6 @@ def save_convert_result(asin: str, convert_format: str, output_file_path: str) -
         )
 
 
-def save_verify_result(asin: str, verified: bool, details_json: str) -> None:
-    with _connect() as conn:
-        conn.execute(
-            """
-            UPDATE books SET
-                verified = ?,
-                verified_at = ?,
-                verify_details_json = ?,
-                updated_at = ?
-            WHERE asin = ?
-            """,
-            (1 if verified else 0, _now(), details_json, _now(), asin),
-        )
-
-
 def log_error(source: str, message: str, traceback: Optional[str] = None) -> None:
     with _connect() as conn:
         conn.execute(

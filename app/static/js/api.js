@@ -19,3 +19,12 @@ async function apiPost(path, body) {
   }
   return response.json();
 }
+
+function openPlayer() {
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.open_player_window) {
+    window.pywebview.api.open_player_window();
+  } else {
+    // Dev-mode fallback when running in a plain browser instead of the packaged app.
+    window.open("/player.html", "_blank");
+  }
+}
