@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
@@ -31,6 +32,22 @@ def _validate_and_prepare(raw_path: str, field_name: str) -> str:
 @router.get("", response_model=SettingsResponse)
 async def get_settings() -> SettingsResponse:
     return _build_response()
+
+
+@router.post("/open-downloads-folder")
+async def open_downloads_folder() -> dict:
+    path = config.get_downloads_dir()
+    path.mkdir(parents=True, exist_ok=True)
+    os.startfile(str(path))  # noqa: S606 - local single-user tool, opening its own configured folder
+    return {"success": True}
+
+
+@router.post("/open-library-folder")
+async def open_library_folder() -> dict:
+    path = config.get_library_output_dir()
+    path.mkdir(parents=True, exist_ok=True)
+    os.startfile(str(path))  # noqa: S606 - local single-user tool, opening its own configured folder
+    return {"success": True}
 
 
 @router.post("", response_model=SettingsResponse)

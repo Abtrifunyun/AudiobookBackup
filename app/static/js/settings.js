@@ -4,6 +4,8 @@ const libraryDirInput = document.getElementById("library-dir");
 const libraryDirDefaultNote = document.getElementById("library-dir-default");
 const saveBtn = document.getElementById("save-btn");
 const resetBtn = document.getElementById("reset-btn");
+const openDownloadsBtn = document.getElementById("open-downloads-btn");
+const openLibraryBtn = document.getElementById("open-library-btn");
 const statusEl = document.getElementById("settings-status");
 
 function showStatus(message, isError) {
@@ -59,6 +61,28 @@ resetBtn.addEventListener("click", async () => {
     showStatus(err.message, true);
   } finally {
     resetBtn.disabled = false;
+  }
+});
+
+openDownloadsBtn.addEventListener("click", async () => {
+  openDownloadsBtn.disabled = true;
+  try {
+    await apiPost("/api/settings/open-downloads-folder");
+  } catch (err) {
+    showStatus(err.message, true);
+  } finally {
+    openDownloadsBtn.disabled = false;
+  }
+});
+
+openLibraryBtn.addEventListener("click", async () => {
+  openLibraryBtn.disabled = true;
+  try {
+    await apiPost("/api/settings/open-library-folder");
+  } catch (err) {
+    showStatus(err.message, true);
+  } finally {
+    openLibraryBtn.disabled = false;
   }
 });
 

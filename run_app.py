@@ -1,3 +1,4 @@
+import os
 import threading
 import time
 
@@ -28,17 +29,27 @@ def _wait_for_server(timeout: float = 10.0) -> bool:
     return False
 
 
+def _force_quit() -> None:
+    # The server runs in a daemon thread, which normally dies with the main
+    # thread on its own - but that's implicit. Since the whole point is that
+    # this program must never linger after the window closes, force it
+    # rather than trust an implicit cleanup path.
+    os._exit(0)
+
+
 def main() -> None:
     threading.Thread(target=_run_server, daemon=True).start()
     _wait_for_server()
-    webview.create_window(
+    window = webview.create_window(
         "Audiobook Backup",
         f"http://{HOST}:{PORT}",
         width=1100,
         height=800,
         min_size=(480, 400),
     )
+    window.events.closed += _force_quit
     webview.start()
+    _force_quit()  # fallback in case start() returns without the event firing
 
 
 if __name__ == "__main__":
